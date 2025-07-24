@@ -44,6 +44,10 @@ describe("Counter Test Suite", () => {
                let setNewCount3 = await counter.getCount();
                expect(setNewCount3).to.eq(20);
 
+               await counter.setCount(30);
+               let setNewCount4 = await counter.getCount();
+               expect(setNewCount3).to.eq(30);
+
 
             })
         })
