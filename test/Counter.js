@@ -21,6 +21,7 @@ describe("Counter Test Suite", () => {
 
     describe("Transactions", () => {
         describe("SetCount", () => {
+
             it("Should set appropriate count values",  async () => {
                 const  counter  = await loadFixture(deployCounter); // extract deployed counter instace
                 let count1 = await counter.getCount(); // check initial count value before txn
@@ -29,20 +30,55 @@ describe("Counter Test Suite", () => {
     
                 let count2 = await counter.getCount(); // check initial count value before txn
                 expect(count2).to.eq(10) // check final count = 10
+
             })
 
             it("Should set appropriate values for multiple setCount txns",  async () => {
-               
+                const  counter  = await loadFixture(deployCounter); // extract deployed counter instace
+                let count1 = await counter.getCount(); // check initial count value before txn
+                expect(count1).to.eq(0);
+                await counter.setCount(10) // assert that count = 0 upon deployment
+
+                 let count2 = await counter.getCount(); // check initial count value before txn
+                 expect(count2).to.eq(10);
+                 await counter.setCount(20)
+
+                 let count3 = await counter.getCount(); // check initial count value before txn
+                 expect(count3).to.eq(20);
+                 await counter.setCount(30)
+
+                let count4 = await counter.getCount(); // check initial count value before txn
+                 expect(count4).to.eq(30);
+                 await counter.setCount(40)
+                               
             })
         })
 
         describe("IncreaseCountByOne", () => {
             it("Should set appropriate increaseCountByOne value",  async () => {
+                const  counter  = await loadFixture(deployCounter); // extract deployed counter instace
+                let count1 = await counter.getCount(); // check initial count value before txn
+                expect(count1).to.eq(0);
+
+                let count2 = await counter.getCount(); // check initial count value before txn
+                expect(count1).to.eq(0);
+             
                 
             })
 
             it("Should set appropriate values for multiple increaseCountByOne txns",  async () => {
-              
+              const  counter  = await loadFixture(deployCounter); // extract deployed counter instace
+                let count1 = await counter.getCount(); // check initial count value before txn
+                expect(count1).to.eq(0);
+
+                let count2 = await counter.getCount(); // check initial count value before txn
+                expect(count1).to.eq(0);
+
+                let count3 = await counter.getCount(); // check initial count value before txn
+                expect(count1).to.eq(0);
+
+                let count4 = await counter.getCount(); // check initial count value before txn
+                expect(count1).to.eq(0);
             })
         })
     })
