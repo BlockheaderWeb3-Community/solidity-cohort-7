@@ -1,48 +1,97 @@
-const {loadFixture } = require("@nomicfoundation/hardhat-toolbox/network-helpers");
+const {loadFixture} = require("@nomicfoundation/hardhat-toolbox/network-helpers");
 // const { anyValue } = require("@nomicfoundation/hardhat-chai-matchers/withArgs");
 const { expect } = require("chai");
+const { extendProvider } = require("hardhat/config");
 
-// util functon 
+//util function
 const deployCounter = async () => {
-    // target the Counter contract within our contract folder
-    const CounterContract = await ethers.getContractFactory("Counter"); // target Counter.sol
-    const counter = await CounterContract.deploy(); // deploy the Counter contract
-    return counter ; // return the deployed instance of our counter contract
+    const Counter = await ethers.getContractFactory("Counter");
+    const counter = await Counter.deploy();
+
+    return counter;
 }
 
-// Counter Test Suite  
+// Counter Test Suite
 describe("Counter Test Suite", () => {
-    describe("Deployment", () => {
-        it("Should return default values upon deployment",  async () => {
-            const  counter  = await loadFixture(deployCounter);
-            expect(await counter.count()).to.eq(0); // assert that count = 0 upon deployment
+    describe("Deployment", () =>{
+        it("Should return default value upon deployment", async () =>{
+            const counter = await loadFixture(deployCounter);
+            expect(await counter.count()).to.eq(0);
         })
     })
 
-    describe("Transactions", () => {
-        describe("SetCount", () => {
-            it("Should set appropriate count values",  async () => {
-                const  counter  = await loadFixture(deployCounter); // extract deployed counter instace
-                let count1 = await counter.getCount(); // check initial count value before txn
+    describe("Transcation", () =>{
+        describe("setCount", () => {
+            it("Should set appropriate count values", async () =>{
+                const counter = await loadFixture(deployCounter); //extract deployed contract instance
+                let count1 = await counter.getCount();
                 expect(count1).to.eq(0);
-                await counter.setCount(10) // assert that count = 0 upon deployment
-    
-                let count2 = await counter.getCount(); // check initial count value before txn
-                expect(count2).to.eq(10) // check final count = 10
+
+                await counter.setCount(10);
+
+                let count2 = await counter.getCount();
+                expect(count2).to.eq(10);
+
             })
 
-            it("Should set appropriate values for multiple setCount txns",  async () => {
-               
-            })
+            it("Should set appropriate count values in mutiple instance", async () =>{
+                const counter = await loadFixture(deployCounter); //extract deployed contract instance
+                let count1 = await counter.getCount();
+                expect(count1).to.eq(0);
+
+                await counter.setCount(10);
+
+                let count2 = await counter.getCount();
+                expect(count2).to.eq(10);
+
+                await counter.setCount(5);
+
+                let count3 = await counter.getCount();
+                expect(count3).to.eq(5);
+
+                await counter.setCount(15);
+
+                let count4 = await counter.getCount()
+                expect(count4).to.eq(15);
+            })    
+        
         })
 
         describe("IncreaseCountByOne", () => {
-            it("Should set appropriate increaseCountByOne value",  async () => {
-                
+
+            it("Should increase count by one", async () =>{
+                const counter = await loadFixture(deployCounter); //extract deployed contract instance
+                let count1 = await counter.getCount();
+                expect(count1).to.eq(0);
+
+                await counter.increaseCountByOne();
+
+                let count2 = await counter.getCount();
+                expect(count2).to.eq(1);
+
             })
 
-            it("Should set appropriate values for multiple increaseCountByOne txns",  async () => {
-              
+            it("Should first set count then increase count by one in multiple instances", async () =>{
+                const counter = await loadFixture(deployCounter); //extract deployed contract instance
+                await counter.setCount(100);
+
+                let count1 = await counter.getCount();
+                expect(count1).to.eq(100);
+
+                await counter.increaseCountByOne();
+
+                let count2 = await counter.getCount();
+                expect(count2).to.eq(101);
+
+                await counter.increaseCountByOne();
+
+                let count3 = await counter.getCount();
+                expect(count3).to.eq(102);
+
+                await counter.increaseCountByOne();
+
+                let count4 = await counter.getCount();
+                expect(count4).to.eq(103);
             })
         })
     })
