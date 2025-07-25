@@ -23,26 +23,3 @@ contract Counter is ICounter {
         return count;
     }
 }
-
-
-// contract F {
-//     // Initializing interface IC
-//    IC public _ic;
-//     // Initializing the contract address 
-//    address public contractCAddress;
-
-//    constructor(address _contractCAddress) {
-//     // Set the contract address to the state variable contract address
-//     contractCAddress = _contractCAddress;
-//     // Passing the contract address into interface using the address instance of another contract
-//     _ic = IC(_contractCAddress);
-//    }
-
-//     function setCount(uint256 _count) public {
-//         _ic.setCount(_count);
-//     }
-
-//     function getCount() public view returns(uint256) {
-//         return _ic.getCount();
-//     }
-// }
