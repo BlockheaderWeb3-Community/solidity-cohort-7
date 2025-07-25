@@ -31,19 +31,55 @@ describe("Counter Test Suite", () => {
                 expect(count2).to.eq(10) // check final count = 10
             })
 
+
             it("Should set appropriate values for multiple setCount txns",  async () => {
-               
+               const counter = await loadFixture(deployCounter);
+               let count = await counter.getcount();
+               expect(count).to.eq(0);
+
+               await counter.setcount(0);
+               let count1 = await counter.getcount();
+               expect(count1).to.eq(10);
+
+                await counter.setcount(10);
+               let count2 = await counter.getcount();
+               expect(count1).to.eq(20);
+
+                await counter.setcount(20);
+               let count3 = await counter.getcount();
+               expect(count1).to.eq(30);
+
+
             })
         })
 
         describe("IncreaseCountByOne", () => {
             it("Should set appropriate increaseCountByOne value",  async () => {
+                const counter = await loadFixture(deployCounter);
+                let count =await counter.getCount();
+                expect(count).to.eq(o);
                 
             })
 
             it("Should set appropriate values for multiple increaseCountByOne txns",  async () => {
+                const counter = await loadFixture(deployCounter);
+                let count =await counter.getCount();
+                expect(count).to.eq(o);
+
+                await counter.increaseCountByOne(0);
+                let count1 = await counter.getcount();
+                expect(count1).to.eq(1);
+
+                await counter.increaseCountByOne(1);
+                let count2 = await counter.getcount();
+                expect(count2).to.eq(2);
+
+                await counter.increaseCountByOne(2);
+                let count3 = await counter.getcount();
+                expect(count3).to.eq(3);
+                
+            })
               
             })
         })
     })
-})
