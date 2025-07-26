@@ -2,11 +2,12 @@
   "name": "hardhat-project",
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@types/minimatch": "^5.1.2",
     "hardhat": "^2.26.1"
-  }, 
+  },
   "scripts": {
-    "test": "npx hardhat test", 
-    "compile": "npx hardhat compile", 
+    "test": "npx hardhat test",
+    "compile": "npx hardhat compile",
     "node": "npx hardhat node"
   }
 }
