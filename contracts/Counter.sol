@@ -4,45 +4,34 @@ pragma solidity 0.8.28;
 interface ICounter {
     function setCount(uint256 _count) external;
     function increaseCountByOne() external;
-    function getCount() external  view returns(uint256);
-
+    function getCount() external view returns (uint256);
 }
 
 contract Counter is ICounter {
     uint256 public count;
+    address public owner;
 
-    function setCount(uint256 _count) external {
+    constructor() {
+        owner = msg.sender;
+    }
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Not owner");
+        _;
+    }
+
+    function setCount(uint256 _count) external onlyOwner {
+        require(_count <= 10, "Count must not exceed 10");
         count = _count;
     }
 
-    function increaseCountByOne() public {
+    function increaseCountByOne() external onlyOwner {
+        require(count + 1 <= 10, "Count must not exceed 10");
         count += 1;
     }
 
-    function getCount() public view returns(uint256) {
+    function getCount() external view returns (uint256) {
         return count;
     }
 }
 
-
-// contract F {
-//     // Initializing interface IC
-//    IC public _ic;
-//     // Initializing the contract address 
-//    address public contractCAddress;
-
-//    constructor(address _contractCAddress) {
-//     // Set the contract address to the state variable contract address
-//     contractCAddress = _contractCAddress;
-//     // Passing the contract address into interface using the address instance of another contract
-//     _ic = IC(_contractCAddress);
-//    }
-
-//     function setCount(uint256 _count) public {
-//         _ic.setCount(_count);
-//     }
-
-//     function getCount() public view returns(uint256) {
-//         return _ic.getCount();
-//     }
-// }
