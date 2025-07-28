@@ -1,48 +1,65 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
 
-interface ICounter {
+interface ICounterV2 {
     function setCount(uint256 _count) external;
     function increaseCountByOne() external;
     function getCount() external  view returns(uint256);
+    function decreaseCountByOne() external;
+    function resetCount() external;
+
 
 }
 
-contract Counter is ICounter {
+contract Counter is ICounterV2 {
+    address public owner;
     uint256 public count;
 
+    constructor(){
+        owner = msg.sender;
+    }
+
     function setCount(uint256 _count) external {
+        require(owner == msg.sender, "Unathorized");
         count = _count;
     }
 
     function increaseCountByOne() public {
+        require(msg.sender == owner, "Unauthorized");
         count += 1;
     }
 
     function getCount() public view returns(uint256) {
         return count;
     }
+
+    function resetCount() public {
+        count = 0;
+    }
+
+    function decreaseCountByOne() external{
+        require(msg.sender == owner, "Unauthorized");
+        count -= 1;
+    }
+
+    function getOwner() public view returns(address{
+        return owner;
+    }
 }
 
+contract  callerICounterV2{
+    ICounterV2 public _IC;
+    address contractAddress;
+    address public owner;
 
-// contract F {
-//     // Initializing interface IC
-//    IC public _ic;
-//     // Initializing the contract address 
-//    address public contractCAddress;
+    constructor(address _contractAddress){
+        contractAddress = _contractAddress;
+        _IC = ICounterV2(contractAddress);
+        owner = msg.sender;
+    }
 
-//    constructor(address _contractCAddress) {
-//     // Set the contract address to the state variable contract address
-//     contractCAddress = _contractCAddress;
-//     // Passing the contract address into interface using the address instance of another contract
-//     _ic = IC(_contractCAddress);
-//    }
-
-//     function setCount(uint256 _count) public {
-//         _ic.setCount(_count);
-//     }
-
-//     function getCount() public view returns(uint256) {
-//         return _ic.getCount();
-//     }
-// }
+    function callDecreaseCountByOne(){
+        require(owner == msg.sender, "Unathorized");
+        _IC.decreaseCountByOne;
+    }
+}
