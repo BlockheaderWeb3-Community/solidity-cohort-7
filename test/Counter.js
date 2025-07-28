@@ -5,7 +5,7 @@ const { expect } = require("chai");
 // util functon 
 const deployCounter = async () => {
     // target the Counter contract within our contract folder
-    const CounterContract = await ethers.getContractFactory("Counter"); // target Counter.sol
+    const CounterContract = await ethers.getContractFactory("Counter"); // target Counter.sol3
     const counter = await CounterContract.deploy(); // deploy the Counter contract
     return counter ; // return the deployed instance of our counter contract
 }
