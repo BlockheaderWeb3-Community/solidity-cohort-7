@@ -11,7 +11,7 @@ interface ICounter {
 contract Counter is ICounter {
     uint256 public count;
 
-    function setCount(uint256 _count) external {
+    function setCount(uint256 _count) public {
         count = _count;
     }
 
@@ -24,6 +24,21 @@ contract Counter is ICounter {
     }
 }
 
+// // contract D is C {
+// //     string public myName;
+
+// //     function getTotalSupply() public view returns(uint256) {
+// //         return totalSupply();
+// //     }
+
+// //     function setName(string memory _myName) external {
+// //         myName = _myName;
+// //     }
+// // }
+
+// // contract E is D {
+
+// // }
 
 // contract F {
 //     // Initializing interface IC
