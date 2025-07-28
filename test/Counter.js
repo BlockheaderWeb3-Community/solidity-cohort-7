@@ -1,49 +1,59 @@
-const {loadFixture } = require("@nomicfoundation/hardhat-toolbox/network-helpers");
-// const { anyValue } = require("@nomicfoundation/hardhat-chai-matchers/withArgs");
+const { loadFixture } = require("@nomicfoundation/hardhat-toolbox/network-helpers");
 const { expect } = require("chai");
 
-// util functon 
 const deployCounter = async () => {
-    // target the Counter contract within our contract folder
-    const CounterContract = await ethers.getContractFactory("Counter"); // target Counter.sol
-    const counter = await CounterContract.deploy(); // deploy the Counter contract
-    return counter ; // return the deployed instance of our counter contract
+    const [owner, otherUser] = await ethers.getSigners();
+    const CounterContract = await ethers.getContractFactory("Counter");
+    const counter = await CounterContract.deploy();
+    return { counter, owner, otherUser };
 }
 
-// Counter Test Suite  
 describe("Counter Test Suite", () => {
+
     describe("Deployment", () => {
-        it("Should return default values upon deployment",  async () => {
-            const  counter  = await loadFixture(deployCounter);
-            expect(await counter.count()).to.eq(0); // assert that count = 0 upon deployment
-        })
-    })
+        it("Should return default values upon deployment", async () => {
+            const { counter } = await loadFixture(deployCounter);
+            expect(await counter.count()).to.eq(0);
+        });
+    });
 
     describe("Transactions", () => {
         describe("SetCount", () => {
-            it("Should set appropriate count values",  async () => {
-                const  counter  = await loadFixture(deployCounter); // extract deployed counter instace
-                let count1 = await counter.getCount(); // check initial count value before txn
-                expect(count1).to.eq(0);
-                await counter.setCount(10) // assert that count = 0 upon deployment
-    
-                let count2 = await counter.getCount(); // check initial count value before txn
-                expect(count2).to.eq(10) // check final count = 10
-            })
+            it("Should allow owner to set count", async () => {
+                const { counter, owner } = await loadFixture(deployCounter);
+                await counter.setCount(5);
+                expect(await counter.getCount()).to.eq(5);
+            });
 
-            it("Should set appropriate values for multiple setCount txns",  async () => {
-               
-            })
-        })
+            it("Should reject non-owner trying to set count", async () => {
+                const { counter, otherUser } = await loadFixture(deployCounter);
+                await expect(counter.connect(otherUser).setCount(5)).to.be.revertedWith("Not owner");
+            });
+
+            it("Should not allow count > 10", async () => {
+                const { counter } = await loadFixture(deployCounter);
+                await expect(counter.setCount(11)).to.be.revertedWith("Count must not exceed 10");
+            });
+        });
 
         describe("IncreaseCountByOne", () => {
-            it("Should set appropriate increaseCountByOne value",  async () => {
-                
-            })
+            it("Should allow owner to increase count by 1", async () => {
+                const { counter } = await loadFixture(deployCounter);
+                await counter.increaseCountByOne();
+                expect(await counter.getCount()).to.eq(1);
+            });
 
-            it("Should set appropriate values for multiple increaseCountByOne txns",  async () => {
-              
-            })
-        })
-    })
-})
+            it("Should reject non-owner trying to increase count", async () => {
+                const { counter, otherUser } = await loadFixture(deployCounter);
+                await expect(counter.connect(otherUser).increaseCountByOne()).to.be.revertedWith("Not owner");
+            });
+
+            it("Should not allow increasing count beyond 10", async () => {
+                const { counter } = await loadFixture(deployCounter);
+                await counter.setCount(10);
+                await expect(counter.increaseCountByOne()).to.be.revertedWith("Count must not exceed 10");
+            });
+        });
+    });
+});
+
