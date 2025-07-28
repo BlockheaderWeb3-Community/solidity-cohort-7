@@ -20,14 +20,30 @@ describe("Counter Test Suite", () => {
     })
 
     describe("Transactions", () => {
-        it("Should set appropriate count values",  async () => {
-            const  counter  = await loadFixture(deployCounter); // extract deployed counter instace
-            let count1 = await counter.getCount(); // check initial count value before txn
-            expect(count1).to.eq(0);
-            await counter.setCount(10) // assert that count = 0 upon deployment
+        describe("SetCount", () => {
+            it("Should set appropriate count values",  async () => {
+                const  counter  = await loadFixture(deployCounter); // extract deployed counter instace
+                let count1 = await counter.getCount(); // check initial count value before txn
+                expect(count1).to.eq(0);
+                await counter.setCount(10) // assert that count = 0 upon deployment
+    
+                let count2 = await counter.getCount(); // check initial count value before txn
+                expect(count2).to.eq(10) // check final count = 10
+            })
 
-            let count2 = await counter.getCount(); // check initial count value before txn
-            expect(count2).to.eq(10) // check final count = 10
+            it("Should set appropriate values for multiple setCount txns",  async () => {
+               
+            })
+        })
+
+        describe("IncreaseCountByOne", () => {
+            it("Should set appropriate increaseCountByOne value",  async () => {
+                
+            })
+
+            it("Should set appropriate values for multiple increaseCountByOne txns",  async () => {
+              
+            })
         })
     })
 })
