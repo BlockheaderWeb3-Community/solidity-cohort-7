@@ -30,19 +30,57 @@ describe("Counter Test Suite", () => {
                 let count2 = await counter.getCount(); // check initial count value before txn
                 expect(count2).to.eq(10) // check final count = 10
             })
-
+        
             it("Should set appropriate values for multiple setCount txns",  async () => {
-               
+               const counter = await loadFixture(deployCounter);
+               let count1 = await counter.getCount();
+               expect(count1).to.eq(0);
+               await counter.setCount(10)
+
+               let count2 = await counter.getCount();
+               expect(count2).to.eq(10);
+               await counter.setCount(20)
+
+               let count3 = await counter.getCount();
+               expect(count3).to.eq(20);
+               await counter.setCount(30)
+
+               let count4 = await counter.getCount();
+               expect(count4).to.eq(30)
+            
             })
         })
 
         describe("IncreaseCountByOne", () => {
             it("Should set appropriate increaseCountByOne value",  async () => {
-                
+                const counter = await loadFixture(deployCounter);
+                let count4 = await counter.getCount();
+                expect(count4).to.eq(0);
+
+                await counter.increaseCountByOne();
+                let inccount = await counter.getCount();
+                expect(inccount).to.eq(1)
             })
 
             it("Should set appropriate values for multiple increaseCountByOne txns",  async () => {
+              const counter = await loadFixture(deployCounter);
+              let count = await counter.getCount();
+              expect(count).to.eq(0);
+
+              await counter.increaseCountByOne();
+              let inccount = await counter.getCount();
+              expect(inccount).to.eq(1);
+                         
+              await counter.increaseCountByOne();               
+              let inccount2 = await counter.getCount();
+              expect(inccount2).to.eq(2);
+             
+              await counter.increaseCountByOne(); 
+              let inccount3 = await counter.getCount();
+              expect(inccount3).to.eq(3);
               
+                        
+            
             })
         })
     })
