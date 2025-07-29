@@ -8,7 +8,6 @@ contract CounterV2Caller is ICounterV2{
     address contractAddr;
 
     constructor(address _contractaddr){
-        contractAddr = _contractaddr;
         icv2 = ICounterV2(_contractaddr);
     }
 

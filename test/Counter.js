@@ -65,21 +65,13 @@ describe("Counter Test Suite", () => {
 
             it("Should set appropriate values for multiple increaseCountByOne txns",  async () => {
                 const counter = await loadFixture(deployCounter);
-                let count = await counter.getCount()
-                expect(count).to.eq(0)
-                await counter.setCount(40)
-                await counter.increaseCountByOne()
-
-                let count2 = await counter.getCount()
-                expect(count2).to.eq(41)
-                await counter.increaseCountByOne()
-
-                let count3 = await counter.getCount()
-                expect(count3).to.eq(42)
-                await counter.increaseCountByOne()
-
-                let count4 = await counter.getCount()
-                expect(count4).to.eq(43)
+                await counter.setCount(1)
+                
+                for(let i = 0; i < 4; i++){
+                    await counter.increaseCountByOne()
+                }
+                expect(await counter.getCount()).to.eq(5)
+                
             })
         })
     })

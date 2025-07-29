@@ -33,5 +33,6 @@ describe("CounterV2Caller Test Suite", () => {
         const { counterV2Caller, otherAccount} = await loadFixture(deployCounter);
         await expect(counterV2Caller.connect(otherAccount).decreaseCountByOne()).to.be.revertedWith("unauthorized address");
     })
+    
   });
 });
