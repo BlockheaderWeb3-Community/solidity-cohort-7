@@ -10,7 +10,7 @@ const deployCounter = async () => {
 
   const CounterV2Contract = await ethers.getContractFactory("CounterV2");
   const counterV2 = await CounterV2Contract.deploy(); //if no constructor no need to put anything in the depl0y place
-  const counterV2address = await counter.getAddress();
+  const counterV2address = await counterV2.getAddress();
 
   const CounterV2CallerContract = await ethers.getContractFactory(
     "CounterV2Caller"
