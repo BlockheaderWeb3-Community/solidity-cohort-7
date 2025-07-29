@@ -2,35 +2,40 @@
 pragma solidity ^0.8.15;
 
 interface IcounterV2 {
-    function resetcounter() external;
-    function setcounter(uint256 _counter) external returns (uint256);
+    function resetCounter() external;
+    function setCounter(uint256 _counter) external returns (uint256);
     function decrement() external;
 }
 
-contract counterV2 is IcounterV2 {
-    address private owner;
+contract CounterV2 is IcounterV2 {
+    address owner;
     uint256 public counter;
     constructor() {
         owner = msg.sender;
     }
 
-    function resetcounter() external onlyOwner {
+    function resetCounter() external onlyOwner {
         if (counter > 0) {
             counter = 0;
         }
     }
 
-    function setcounter(
-        uint256 _counter
-    ) external view onlyOwner returns (uint256) {
-        require(_counter == 0, "can't pass in 0 value argument");
-        return _counter;
+    function setCounter(uint256 _counter) external onlyOwner returns (uint256) {
+        require(_counter > 0, "can't pass in 0 value argument");
+        return counter = _counter;
     }
 
     function decrement() external {
         counter -= 1;
     }
 
+    // getter functions
+    function getOwner() external view returns (address) {
+        return owner;
+    }
+    function getCounter() external view returns (uint256) {
+        return counter;
+    }
     modifier onlyOwner() {
         require(msg.sender == owner, "who goes you!!");
         _;
