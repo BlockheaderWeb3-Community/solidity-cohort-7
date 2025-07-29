@@ -9,5 +9,8 @@
     "test": "npx hardhat test",
     "compile": "npx hardhat compile",
     "node": "npx hardhat node"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.4.0"
   }
 }
