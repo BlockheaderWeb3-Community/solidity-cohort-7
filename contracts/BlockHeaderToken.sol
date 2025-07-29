@@ -17,6 +17,7 @@ contract BlockToken is ERC20{
         _;
     }
     constructor(string memory _name, string memory _symbol, address _owner) ERC20(_name, _symbol){
+
         require(_owner != address(0), "BlockToken:: Zero Address not supported");
         owner = _owner;
     }
@@ -32,6 +33,5 @@ contract BlockToken is ERC20{
     function burnFrom(address _user, uint256 _amount)onlyOwner notAmount0(_amount) external {
         _burn(_user, _amount);
     }
-
 
 }
