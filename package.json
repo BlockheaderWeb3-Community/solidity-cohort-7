@@ -8,8 +8,12 @@
   "scripts": {
     "test": "npx hardhat test",
     "compile": "npx hardhat compile",
+<<<<<<< HEAD
     "node": "npx hardhat node",
     "coverage": "npx hardhat coverage"
+=======
+    "node": "npx hardhat node"
+>>>>>>> a4d0ba6edafbb9e1eec0b8a926f44e91c6190506
   },
   "dependencies": {
     "@openzeppelin/contracts": "^5.4.0"
