@@ -1,0 +1,103 @@
+const { expect } = require('chai');
+const { ethers } = require('hardhat');
+
+let BlockToken;
+let blockToken;
+let owner;
+let addr1;
+let addr2;
+
+beforeEach(async () => {
+    BlockToken = await ethers.getContractFactory('BlockToken');
+    [owner, addr1, addr2] = await ethers.getSigners();
+    blockToken = await BlockToken.deploy("BlockToken", "BTK");
+    await blockToken.deployed();
+});
+
+describe('BlockToken Test Suite', function () {
+    describe('Deployment', function () {
+        it('Should return set values upon deployment', async function () {
+            expect(await blockToken.name()).to.equal("BlockToken");
+            expect(await blockToken.symbol()).to.equal("BTK");
+        });
+
+        it('Should revert if owner is zero address', async function () {
+            await expect(BlockToken.deploy("", "")).to.be.revertedWith('BlockToken:: Zero Address not supported');
+        });
+    });
+
+    describe('Burning', function () {
+        it('Should not burn if user doesn\'t have tokens', async function () {
+            await expect(blockToken.burn(1)).to.be.revertedWith('ERC20: burn amount exceeds balance');
+        });
+
+        it('Should burn tokens successfully', async function () {
+            await blockToken.mint(owner.address, 100);
+            await blockToken.burn(50);
+            expect(await blockToken.balanceOf(owner.address)).to.equal(50);
+        });
+
+        it('Should allow only owner to burnFrom', async function () {
+            await blockToken.mint(owner.address, 100);
+            await blockToken.approve(addr1.address, 50);
+            await expect(blockToken.connect(addr1).burnFrom(owner.address, 50)).to.be.revertedWith('Ownable: caller is not the owner');
+        });
+
+        it('Should not burn zero amount', async function () {
+            await expect(blockToken.burn(0)).to.be.revertedWith('ERC20: burn amount must be greater than zero');
+        });
+    });
+
+    describe('Transactions', function () {
+        it('Should transfer tokens from one account to another', async function () {
+            await blockToken.mint(owner.address, 100);
+            await blockToken.transfer(addr1.address, 50);
+            expect(await blockToken.balanceOf(addr1.address)).to.equal(50);
+        });
+
+        it('Should transfer tokens less than or equal to balance', async function () {
+            await blockToken.mint(owner.address, 100);
+            await expect(blockToken.transfer(addr1.address, 150)).to.be.revertedWith('ERC20: transfer amount exceeds balance');
+        });
+
+        describe('Transfer From', function () {
+            it('Should approve for transferFrom function', async function () {
+                await blockToken.mint(owner.address, 100);
+                await blockToken.approve(addr1.address, 50);
+                await blockToken.connect(addr1).transferFrom(owner.address, addr2.address, 50);
+                expect(await blockToken.balanceOf(addr2.address)).to.equal(50);
+            });
+
+            it('Should transferFrom based on approve and allowance', async function () {
+                await blockToken.mint(owner.address, 100);
+                await blockToken.approve(addr1.address, 50);
+                await blockToken.connect(addr1).transferFrom(owner.address, addr2.address, 50);
+                expect(await blockToken.balanceOf(addr2.address)).to.equal(50);
+            });
+
+            it('Should revert if balance of "from" is insufficient', async function () {
+                await blockToken.mint(owner.address, 100);
+                await blockToken.approve(addr1.address, 50);
+                await expect(blockToken.connect(addr1).transferFrom(owner.address, addr2.address, 150)).to.be.revertedWith('ERC20: transfer amount exceeds balance');
+            });
+
+            it('Should revert if allowance is zero for spender', async function () {
+                await blockToken.mint(owner.address, 100);
+                await expect(blockToken.connect(addr1).transferFrom(owner.address, addr2.address, 50)).to.be.revertedWith('ERC20: transfer amount exceeds allowance');
+            });
+
+            it('Should revert if "to" is address zero', async function () {
+                await blockToken.mint(owner.address, 100);
+                await blockToken.approve(addr1.address, 50);
+                await expect(blockToken.connect(addr1).transferFrom(owner.address, ethers.constants.AddressZero, 50)).to.be.revertedWith('ERC20: transfer to the zero address');
+            });
+
+            it('Should revert if allowance is incremented and not replaced', async function () {
+                await blockToken.mint(owner.address, 100);
+                await blockToken.approve(addr1.address, 50);
+                await blockToken.approve(addr1.address, 100);
+                await expect(blockToken.connect(addr1).transferFrom(owner.address, addr2.address, 50)).to.be.revertedWith('ERC20: transfer amount exceeds allowance');
+            });
+        });
+    });
+});
