@@ -1,48 +1,37 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
 
-interface ICounter {
+interface ICounterV2 {
     function setCount(uint256 _count) external;
     function increaseCountByOne() external;
     function getCount() external  view returns(uint256);
 
+
+
 }
 
-contract Counter is ICounter {
+contract Counter is ICounterV2 {
+    address public owner;
     uint256 public count;
 
+
+
     function setCount(uint256 _count) external {
+        require(owner == msg.sender, "Unathorized");
         count = _count;
     }
 
     function increaseCountByOne() public {
+        require(msg.sender == owner, "Unauthorized");
         count += 1;
     }
 
     function getCount() public view returns(uint256) {
         return count;
     }
-}
 
 
-// contract F {
-//     // Initializing interface IC
-//    IC public _ic;
-//     // Initializing the contract address 
-//    address public contractCAddress;
 
-//    constructor(address _contractCAddress) {
-//     // Set the contract address to the state variable contract address
-//     contractCAddress = _contractCAddress;
-//     // Passing the contract address into interface using the address instance of another contract
-//     _ic = IC(_contractCAddress);
-//    }
+    }
 
-//     function setCount(uint256 _count) public {
-//         _ic.setCount(_count);
-//     }
 
-//     function getCount() public view returns(uint256) {
-//         return _ic.getCount();
-//     }
-// }
