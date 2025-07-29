@@ -173,7 +173,7 @@ describe("BlockToken Test Suite", () => {
       });
 
       it("Should revert when transferring zero tokens", async () => {
-        const { BlockToken, addr1, addr2 } = await loadFixture(deployBlockToken);
+        const { BlockToken, owner_, addr1, addr2 } = await loadFixture(deployBlockToken);
         await BlockToken.connect(addr1).approveTxn(addr2, 1000);
         await expect(
           BlockToken.connect(addr2).transferFromtk(addr1, owner_, 0)
