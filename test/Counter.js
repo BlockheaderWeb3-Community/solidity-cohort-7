@@ -1,10 +1,10 @@
 // const {
 //   loadFixture,
 // } = require("@nomicfoundation/hardhat-toolbox/network-helpers");
-// // const { anyValue } = require("@nomicfoundation/hardhat-chai-matchers/withArgs");
+// const { anyValue } = require("@nomicfoundation/hardhat-chai-matchers/withArgs");
 // const { expect } = require("chai");
 
-// // util functon
+// util functon
 // const deployCounter = async () => {
 //   // target the Counter contract within our contract folder
 //   const CounterContract = await ethers.getContractFactory("Counter"); // target Counter.sol
@@ -12,7 +12,7 @@
 //   return counter; // return the deployed instance of our counter contract
 // };
 
-// // Counter Test Suite
+// Counter Test Suite
 // describe("Counter Test Suite", () => {
 //   describe("Deployment", () => {
 //     it("Should return default values upon deployment", async () => {
@@ -24,7 +24,7 @@
 //   describe("Transactions", () => {
 //     describe("SetCount", () => {
 //       it("Should set appropriate count values", async () => {
-//         const counter = await loadFixture(deployCounter); // extract deployed counter instace
+//         const counter = await loadFixture(deployCounter); // extract deployed counter instance
 //         let count1 = await counter.getCount(); // check initial count value before txn
 //         expect(count1).to.eq(0);
 //         await counter.setCount(10); // assert that count = 0 upon deployment
@@ -34,56 +34,61 @@
 //       });
 
 //       it("Should set appropriate values for multiple setCount txns", async () => {
-//         const data = await loadFixture(deployCounter);
+//         const counter = await loadFixture(deployCounter);
+//         let count1 = await counter.getCount();
+//         expect(count1).to.eq(0);
+//         await counter.setCount(10);
 
-//         // tx one
-//         let counter = await data.getCount();
-//         expect(counter).to.eq(0);
+//         let count2 = await counter.getCount();
+//         expect(count2).to.eq(10);
+//         await counter.setCount(20);
 
-//         await data.setCount(32);
-//         let counter1 = await data.getCount();
-//         expect(counter1).to.eq(32);
+//         let count3 = await counter.getCount();
+//         expect(count3).to.eq(20);
+//         await counter.setCount(30);
+
+//         let count4 = await counter.getCount();
+//         expect(count4).to.eq(30);
 //       });
 //     });
 
 //     describe("IncreaseCountByOne", () => {
 //       it("Should set appropriate increaseCountByOne value", async () => {
-//         const data = await loadFixture(deployCounter);
-//         let data1 = await data.getCount();
-//         expect(data1).to.eq(0);
+//         const counter = await loadFixture(deployCounter);
+//         let count1 = await counter.getCount();
+//         expect(count1).to.eq(0);
+//         await counter.increaseCountByOne();
 
-//         await data.increaseCountByOne();
-//         let data2 = await data.getCount();
-//         expect(data2).to.eq(1);
+//         let count2 = await counter.getCount();
+//         expect(count2).to.eq(1);
 //       });
 
 //       it("Should set appropriate values for multiple increaseCountByOne txns", async () => {
 //         const counter = await loadFixture(deployCounter);
-//         await counter.setCount(10);
-//         let counter1 = await counter.getCount();
-//         expect(counter1).to.eq(10);
+//         // let count1 = await counter.getCount();
+//         // expect(count1).to.eq(0);
+//         // await counter.increaseCountByOne();
+
+//         // let count2 = await counter.getCount();
+//         // expect(count2).to.eq(1);
+//         // await counter.increaseCountByOne();
+
+//         // let count3 = await counter.getCount();
+//         // expect(count3).to.eq(2);
+//         // await counter.increaseCountByOne();
+
+//         // let count4 = await counter.getCount();
+//         // expect(count4).to.eq(3);
+//         await counter.setCount(30);
+//         let count1 = await counter.getCount();
+//         expect(count1).to.eq(30);
 
 //         for (let i = 0; i < 5; i++) {
 //           await counter.increaseCountByOne();
 //         }
-//         let counter2 = await counter.getCount();
-//         expect(counter2).to.eq(15);
 
-//         while (true) {
-//           await counter.increaseCountByOne();
-//           if ((await counter.getCount()) == 25) {
-//             break;
-//           }
-//         }
-//         expect(await counter.getCount()).to.eq(25);
-
-//         i = 0;
-//         while (i < 10) {
-//           await counter.increaseCountByOne();
-//           i++;
-//         }
-
-//         expect(await counter.getCount()).to.eq(35);
+//         let count2 = await counter.getCount();
+//         expect(count2).to.eq(35);
 //       });
 //     });
 //   });
