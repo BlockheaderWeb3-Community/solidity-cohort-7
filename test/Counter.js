@@ -5,7 +5,7 @@ const { expect } = require("chai");
 // util functon 
 const deployCounter = async () => {
     // target the Counter contract within our contract folder
-    const CounterContract = await ethers.getContractFactory("Counter"); // target Counter.sol
+    const CounterContract = await ethers.getContractFactory("Counter"); // target Counter.sol3
     const counter = await CounterContract.deploy(); // deploy the Counter contract
     return counter ; // return the deployed instance of our counter contract
 }
@@ -31,18 +31,53 @@ describe("Counter Test Suite", () => {
                 expect(count2).to.eq(10) // check final count = 10
             })
 
-            it("Should set appropriate values for multiple setCount txns",  async () => {
-               
+            it("Should set appropriate values for multiple setCount txns", async () => {
+             const  counter  = await loadFixture(deployCounter); 
+              let setNewCount=  await counter.getCount();
+               expect(setNewCount).to.eq(0); 
+
+               await counter.setCount(10);
+               let setNewCount2 = await counter.getCount();
+               expect(setNewCount2).to.eq(10);
+
+               await counter.setCount(20);
+               let setNewCount3 = await counter.getCount();
+               expect(setNewCount3).to.eq(20);
+
+
             })
         })
 
         describe("IncreaseCountByOne", () => {
             it("Should set appropriate increaseCountByOne value",  async () => {
                 
-            })
+                const counter = await loadFixture(deployCounter); 
+                let count1 = await counter.getCount(); 
+                expect(count1).to.eq(0);
+                await counter.increaseCountByOne() 
+                let count2 = await counter.getCount(); 
+                expect(count2).to.eq(1) 
+            });
 
             it("Should set appropriate values for multiple increaseCountByOne txns",  async () => {
-              
+                const counter = await loadFixture(deployCounter); 
+
+                let count1 = await counter.getCount(); 
+                expect(count1).to.eq(0);  
+
+                await counter.increaseCountByOne(); 
+                let count2 = await counter.getCount(); 
+                expect(count2).to.eq(1);
+
+                await counter.increaseCountByOne();
+                let count3 = await counter.getCount();
+                expect(count3).to.eq(2);
+
+                await counter.increaseCountByOne();
+                let count4 = await counter.getCount();
+                expect(count4).to.eq(3);
+
+                
             })
         })
     })
