@@ -33,6 +33,17 @@ contract BlockToken is ERC20{
         _burn(_user, _amount);
     }
 
+    function tokenTransfer(address _recepient, uint256 _amount) notAmount0(_amount) external {
+        _transfer(msg.sender, _recepient, _amount);
+    }
+
+    function transferTokenFrom(address _sender, address _recepient, uint256 _amount) notAmount0(_amount) external {
+        _transfer(_sender, _recepient, _amount);
+    }
+
+    function tokenApprove(address spender, uint256 _amount) notAmount0(_amount) external{
+        _approve(msg.sender, spender, _amount);
+    }
 
 }
 

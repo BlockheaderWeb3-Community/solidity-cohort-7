@@ -79,4 +79,177 @@ describe("BlockToken Test Suite", () => {
       expect(await BlockToken.balanceOf(owner_)).to.eq(900);
     });
   });
+  
+>> Cletus-Assignment2
+
+  describe("burning From", () =>{
+   it("Should not burn if user doesn't have tokens", async () => {
+     const {BlockToken, owner_, addr1} = await loadFixture(deployBlockToken);
+     await expect(BlockToken.connect(owner_).burnFrom(addr1, 1000)
+    ).to.be.revertedWithCustomError(BlockToken, "ERC20InsufficientBalance");
+    });
+   
+    it("Shound burn from an address successfully", async () => {
+        const {BlockToken, owner_, addr1} = await loadFixture(deployBlockToken);
+        await BlockToken.connect(owner_).mint(2000, addr1);
+        expect(await BlockToken.balanceOf(addr1)).to.eq(2000);
+
+        await BlockToken.connect(owner_).burnFrom(addr1,1000);
+        expect(await BlockToken.balanceOf(addr1)).to.eq(1000);
+    });
+
+   it("Should revert when burning zero tokens", async () => {
+        const { BlockToken, owner_, addr1 } = await loadFixture(deployBlockToken);
+        await expect(
+        BlockToken.connect(owner_).burnFrom(addr1, 0)
+        ).to.be.revertedWith("BlockToken:: Zero amount not supported");
+    });
+
+    it("Should revert when burning more than balance", async () => {
+        const { BlockToken, owner_ ,addr1} = await loadFixture(deployBlockToken);
+        await BlockToken.connect(owner_).mint(500, addr1);
+        await expect(
+        BlockToken.connect(owner_).burnFrom(addr1, 1000)
+        ).to.be.revertedWithCustomError(BlockToken, "ERC20InsufficientBalance");
+    });
+
+    it("Should revert if burnining called by different address", async () =>{
+    const { BlockToken,addr2, addr1 } = await loadFixture(deployBlockToken);
+    // test that another user cant call successfully
+    let malicioustxn = BlockToken.connect(addr1).burnFrom(addr2, 1000);
+    await expect(malicioustxn).to.be.revertedWith(
+    "BlockToken:: Unauthorized User"
+    );
+    });
 });
+
+describe("Approve token transfer", () =>{
+    it("Should revert when approving zero tokens", async () => {
+            const { BlockToken, owner_,addr1,addr2 } = await loadFixture(deployBlockToken);
+            await BlockToken.connect(owner_).mint(1000, addr1);
+
+            await expect(
+            BlockToken.connect(addr1).tokenApprove(addr2, 0)
+            ).to.be.revertedWith("BlockToken:: Zero amount not supported");
+        });
+
+    it("Should revert if approving to address zero", async () => {
+            const { BlockToken, owner_, addr1, addr2 } = await loadFixture(deployBlockToken);
+            let ZeroAddress = "0x0000000000000000000000000000000000000000";
+
+            await BlockToken.connect(owner_).mint(500, addr1)
+            await expect(
+                BlockToken.connect(addr1).tokenApprove(ZeroAddress, 50)
+            ).to.be.revertedWithCustomError(BlockToken, "ERC20InvalidSpender");
+        });
+
+    it("Should Approve Tokens Successfully", async () => {
+            const { BlockToken, owner_, addr1, addr2 } = await loadFixture(deployBlockToken);
+
+            await BlockToken.connect(addr1).tokenApprove(addr2, 300);
+            expect(await BlockToken.allowance(addr1,addr2)).to.eq(300);
+            
+    });
+  });
+  describe("Token Transfer ", () => {
+    describe("TOken transfer Transaction", () => {
+        it("Should revert if from address doesn't have tokens", async () => {
+            const { BlockToken, owner_, addr1, addr2 } = await loadFixture(deployBlockToken);
+            // await BlockToken.connect(owner_).mint(1000, addr1);
+            await expect(
+                BlockToken.connect(addr1).tokenTransfer(addr2, 1000)
+            ).to.be.revertedWithCustomError(BlockToken, "ERC20InsufficientBalance");
+        });
+
+        it("Should revert when transfering zero tokens", async () => {
+            const { BlockToken, owner_,addr1,addr2 } = await loadFixture(deployBlockToken);
+            await BlockToken.connect(owner_).mint(1000, addr1);
+
+            await expect(
+            BlockToken.connect(addr1).tokenTransfer(addr2, 0)
+            ).to.be.revertedWith("BlockToken:: Zero amount not supported");
+        });
+
+        it("Should revert when transfering more than balance", async () => {
+            const { BlockToken, owner_, addr1,addr2 } = await loadFixture(deployBlockToken);
+            await BlockToken.connect(owner_).mint(500, addr1);
+            await expect(
+                BlockToken.connect(addr1).tokenTransfer(addr2, 1000)
+            ).to.be.revertedWithCustomError(BlockToken, "ERC20InsufficientBalance");
+        });
+
+        it("Should revert if transfering to address zero", async () => {
+            const { BlockToken, owner_, addr1, addr2 } = await loadFixture(deployBlockToken);
+            let ZeroAddress = "0x0000000000000000000000000000000000000000";
+
+            await BlockToken.connect(owner_).mint(500, addr1)
+            await expect(
+                BlockToken.connect(addr1).tokenTransfer(ZeroAddress, 50)
+            ).to.be.revertedWithCustomError(BlockToken, "ERC20InvalidReceiver");
+        });
+
+        it("Should Burn Tokens Successfully", async () => {
+            const { BlockToken, owner_, addr1, addr2 } = await loadFixture(deployBlockToken);
+            await BlockToken.connect(owner_).mint(1000, addr1);
+            expect(await BlockToken.balanceOf(addr1)).to.eq(1000);
+
+            await BlockToken.connect(addr1).tokenTransfer(addr2, 300);
+            expect(await BlockToken.balanceOf(addr1)).to.eq(700);
+            expect(await BlockToken.balanceOf(addr2)).to.eq(300);
+            
+        });
+    });
+});
+
+describe("TransferFrom Token", () => {
+        it("Should revert if owner address doesn't have tokens", async () => {
+            const { BlockToken, owner_, addr1, addr2 } = await loadFixture(deployBlockToken);
+            await BlockToken.connect(addr1).tokenApprove(addr2,100);
+            await expect(
+                BlockToken.connect(addr2).transferTokenFrom(addr1,owner_,50)
+            ).to.be.revertedWithCustomError(BlockToken, "ERC20InsufficientBalance");
+        });
+
+        it("Should revert when transfering zero tokens", async () => {
+            const { BlockToken, owner_,addr1,addr2 } = await loadFixture(deployBlockToken);
+            await BlockToken.connect(owner_).mint(1000, addr1);
+            await BlockToken.connect(addr1).tokenApprove(addr2,500)
+            await expect(
+            BlockToken.connect(addr2).transferTokenFrom(addr1,owner_, 0)
+            ).to.be.revertedWith("BlockToken:: Zero amount not supported");
+        });
+
+        it("Should revert when transfering more than balance", async () => {
+            const { BlockToken, owner_, addr1,addr2 } = await loadFixture(deployBlockToken);
+            await BlockToken.connect(owner_).mint(1000, addr1);
+            await BlockToken.connect(addr1).tokenApprove(addr2,5000)
+            await expect(
+                BlockToken.connect(addr2).transferTokenFrom(addr1,owner_, 2000)
+            ).to.be.revertedWithCustomError(BlockToken, "ERC20InsufficientBalance");
+        });
+
+        it("Should revert if transfering to address zero", async () => {
+            const { BlockToken, owner_, addr1, addr2 } = await loadFixture(deployBlockToken);
+            let ZeroAddress = "0x0000000000000000000000000000000000000000";
+            await BlockToken.connect(owner_).mint(1000, addr1);
+            await BlockToken.connect(addr1).tokenApprove(addr2,5000)
+            await expect(
+                BlockToken.connect(addr2).transferTokenFrom(addr1, ZeroAddress, 500)
+            ).to.be.revertedWithCustomError(BlockToken, "ERC20InvalidReceiver");
+        });
+
+        it("Should Transfer Tokens Successfully Using TranasferFrom", async () => {
+            const { BlockToken, owner_, addr1, addr2 } = await loadFixture(deployBlockToken);
+            await BlockToken.connect(owner_).mint(1000, addr1);
+            await BlockToken.connect(addr1).tokenApprove(addr2,5000)
+
+            await BlockToken.connect(addr2).transferTokenFrom(addr1,addr2, 400);
+
+            expect(await BlockToken.balanceOf(addr1)).to.eq(600);
+            expect(await BlockToken.balanceOf(addr2)).to.eq(400);
+            
+        });
+    });
+  })
+});
+>>> Erc20-testing
