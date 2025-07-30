@@ -197,7 +197,7 @@ const {
         const zeroAddress = "0x0000000000000000000000000000000000000000";
 
         await BlockToken.connect(owner_).mint(1000, addr1);
-        expect(await BlockToken.balanceOf(addr1)).to.eq(2000);
+        expect(await BlockToken.balanceOf(addr1)).to.eq(1000);
 
         await BlockToken.connect(addr1).approve(owner_, 500);
         expect(await BlockToken.connect(addr1).allowance(addr1, owner_)).to.eq(
