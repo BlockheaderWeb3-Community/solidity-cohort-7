@@ -47,7 +47,7 @@ describe("BlockToken Test Suite", () => {
       await BlockToken.connect(owner_).mint(1000, addr1);
       expect(await BlockToken.balanceOf(addr1)).to.eq(1000);
 
-      // test that another user cant call successfully
+    
       let malicioustxn = BlockToken.connect(addr1).mint(1000, addr1);
       await expect(malicioustxn).to.be.revertedWith(
         "BlockToken:: Unauthorized User"
