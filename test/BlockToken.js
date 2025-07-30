@@ -46,6 +46,12 @@ describe("BlockToken Test Suite", () => {
         BlockToken.connect(owner_).mint(0, addr1)
       ).to.be.revertedWith("BlockToken:: Zero amount not supported");
     });
+
+    it("Should revert if minting to address zero", async () => {
+      const { BlockToken, owner_ } = await loadFixture(deployBlockToken);
+      let ZeroAddress = "0x0000000000000000000000000000000000000000";
+      await expect(BlockToken.connect(owner_).mint(1000, ZeroAddress)).to.be.revertedWithCustomError(BlockToken, "ERC20InvalidReceiver");
+    })
   });
 
   describe("Burning", () => {
@@ -121,6 +127,13 @@ describe("BlockToken Test Suite", () => {
         const maliciousTxn = BlockToken.connect(addr1).burnFrom(addr2, 1000);
         await expect(maliciousTxn).to.be.revertedWith("BlockToken:: Unauthorized User");
       });
+
+      it("Should revert if burning zero amount", async () => {
+        const { BlockToken, owner_, addr1 } = await loadFixture(deployBlockToken);
+        await BlockToken.connect(owner_).mint(1000, owner_);
+        await BlockToken.connect(owner_).transfertk(addr1, 400);
+        await expect(BlockToken.connect(owner_).burnFrom(addr1, 0)).to.be.revertedWith("BlockToken:: Zero amount not supported")
+      })
     });
   });
 
@@ -161,6 +174,11 @@ describe("BlockToken Test Suite", () => {
           BlockToken.connect(owner_).transfertk(addr1, 2000)
         ).to.be.revertedWithCustomError(BlockToken, "ERC20InsufficientBalance");
       });
+      it("Should revert if transferring zero tokens", async () => {
+        const { BlockToken, owner_, addr1 } = await loadFixture(deployBlockToken);
+        await BlockToken.connect(owner_).mint(1000, owner_);
+        await expect(BlockToken.connect(owner_).transfertk(addr1, 0)).to.be.revertedWith("BlockToken:: Zero amount not supported");
+      })
     });
 
     describe("TransferFrom Txn", () => {
