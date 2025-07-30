@@ -46,3 +46,4 @@ contract BlockToken is ERC20{
     }
 
 }
+

@@ -79,6 +79,8 @@ describe("BlockToken Test Suite", () => {
       expect(await BlockToken.balanceOf(owner_)).to.eq(900);
     });
   });
+  
+>> Cletus-Assignment2
 
   describe("burning From", () =>{
    it("Should not burn if user doesn't have tokens", async () => {
@@ -249,3 +251,5 @@ describe("TransferFrom Token", () => {
         });
     });
   })
+});
+>>> Erc20-testing
