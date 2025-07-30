@@ -37,7 +37,7 @@ contract BlockToken is ERC20{
         _transfer(msg.sender, _recepient, _amount);
     }
 
-    function transferFromToken(address _sender, address _recepient, uint256 _amount) notAmount0(_amount) external {
+    function transferFromAdd(address _sender, address _recepient, uint256 _amount) notAmount0(_amount) external {
         _transfer(_sender, _recepient, _amount);
     }
 

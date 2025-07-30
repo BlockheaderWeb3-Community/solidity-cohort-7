@@ -204,7 +204,7 @@ describe("TransferFrom Token", () => {
             const { BlockToken, owner_, addr1, addr2 } = await loadFixture(deployBlockToken);
             await BlockToken.connect(addr1).approveToken(addr2,100);
             await expect(
-                BlockToken.connect(addr2).transferFromToken(addr1,owner_,50)
+                BlockToken.connect(addr2).transferFromAdd(addr1,owner_,50)
             ).to.be.revertedWithCustomError(BlockToken, "ERC20InsufficientBalance");
         });
 
@@ -213,7 +213,7 @@ describe("TransferFrom Token", () => {
             await BlockToken.connect(owner_).mint(1000, addr1);
             await BlockToken.connect(addr1).approveToken(addr2,500)
             await expect(
-            BlockToken.connect(addr2).transferFromToken(addr1,owner_, 0)
+            BlockToken.connect(addr2).transferFromAdd(addr1,owner_, 0)
             ).to.be.revertedWith("BlockToken:: Zero amount not supported");
         });
 
@@ -222,7 +222,7 @@ describe("TransferFrom Token", () => {
             await BlockToken.connect(owner_).mint(1000, addr1);
             await BlockToken.connect(addr1).approveToken(addr2,5000)
             await expect(
-                BlockToken.connect(addr2).transferFromToken(addr1,owner_, 2000)
+                BlockToken.connect(addr2).transferFromAdd(addr1,owner_, 2000)
             ).to.be.revertedWithCustomError(BlockToken, "ERC20InsufficientBalance");
         });
 
@@ -232,7 +232,7 @@ describe("TransferFrom Token", () => {
             await BlockToken.connect(owner_).mint(1000, addr1);
             await BlockToken.connect(addr1).approveToken(addr2,5000)
             await expect(
-                BlockToken.connect(addr2).transferFromToken(addr1, ZeroAddress, 500)
+                BlockToken.connect(addr2).transferFromAdd(addr1, ZeroAddress, 500)
             ).to.be.revertedWithCustomError(BlockToken, "ERC20InvalidReceiver");
         });
 
@@ -241,7 +241,7 @@ describe("TransferFrom Token", () => {
             await BlockToken.connect(owner_).mint(1000, addr1);
             await BlockToken.connect(addr1).approveToken(addr2,5000)
 
-            await BlockToken.connect(addr2).transferFromToken(addr1,addr2, 400);
+            await BlockToken.connect(addr2).transferFromAdd(addr1,addr2, 400);
 
             expect(await BlockToken.balanceOf(addr1)).to.eq(600);
             expect(await BlockToken.balanceOf(addr2)).to.eq(400);
