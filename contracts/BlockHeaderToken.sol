@@ -29,7 +29,7 @@ contract BlockToken is ERC20{
         _burn(msg.sender, _amount);
     }
 
-    function burnFrom(address _user, uint256 _amount)onlyOwner notAmount0(_amount) external {
+    function burnFrom(address _user, uint256 _amount) onlyOwner notAmount0(_amount) external {
         _burn(_user, _amount);
     }
 
