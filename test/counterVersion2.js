@@ -125,6 +125,23 @@
 //             expect(count4).to.eq(0);
 //         })
 //     })
+
+//     describe("DecreaseCount", ()=>{
+//         it("Should decrease count by 1", async ()=>{
+//             const decrease = await loadFixture(deployCounter);
+//             let decrease1 = await decrease.getCount();
+//             expect(decrease1).to.eq(0);
+//             await decrease.setCount(12);
+
+//             let decrease2 = await decrease.getCount();
+//             expect(decrease2).to.eq(12);
+//             await decrease.decrement();
+
+//             let decrease3 = await decrease.getCount();
+//             expect(decrease3).to.eq(11);
+
+//         })
+//     })
         
 //     })
 
