@@ -37,6 +37,7 @@ address public marketOwner;
 
     function listNft(Listing memory list) external {
        uint listId =  lastUpdatedid++;
+       
        require(list.price > 0, "Invalid price");
        require(list.minOffer > 0, "Invalid min offer");
        if(list.isNative){
@@ -112,7 +113,7 @@ address public marketOwner;
         idToOffer[offerid].status = true;
         // Interactions
         if(l.isNative){
-            (bool success,) = l.owner.call{value: offer_.offerAmount * 97/100}("");
+            (bool success,) = l.owner.call{value: offer_.offerAmount * 97/100}("hsdfkjv");
             (bool success2,) = marketOwner.call{value: offer_.offerAmount * 3/100}("");
             require(success, "Failed owner transfer");
             require(success2, "Failed marketPlace commission transfer");
@@ -150,6 +151,23 @@ address public marketOwner;
         delete idToListing[listid];
         // Interaction
         IERC721(l.NftToken).transferFrom(address(this), l.owner, l.tokenId);
+    }
+
+    function changeOwner(address newOwner) external {
+        require(msg.sender == marketOwner, "unauthorized user");
+        marketOwner = newOwner;
+    }
+
+    function callAnything(address _target) external {
+        bytes memory data = abi.encodeWithSignature("SetCount(uint256)", 10);
+        (bool s,) = _target.call(data);
+        require(s, "Call failed");
+    }
+
+    function callname(address _target) external {
+        bytes memory data = abi.encodeWithSignature("setname(string)", "gregory");
+        (bool ok,) = _target.call(data);
+        require(ok);
     }
 
 }

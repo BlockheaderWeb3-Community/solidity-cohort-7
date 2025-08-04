@@ -15,6 +15,7 @@ const deployBlockMarketPlace = async () => {
   ); // target BlockMarketPlace.sol
   const BlockNftContract = await ethers.getContractFactory("BlockNft");
   const BlockTokenContract = await ethers.getContractFactory("BlockToken");
+  const MockOwnerContract = await ethers.getContractFactory("MockOwner");
   let name_ = "BlockToken";
   let symbol_ = "BCT";
   const BlockToken = await BlockTokenContract.deploy(
@@ -22,10 +23,23 @@ const deployBlockMarketPlace = async () => {
     symbol_,
     owner_.address
   ); // deploy the BlockToken contract
+  const oneEther = ethers.parseEther("1");
+  let ZeroAddress = "0x0000000000000000000000000000000000000000";
   const blocknft = await BlockNftContract.deploy();
   const marketplace = await BlockMarketPlaceContract.connect(owner_).deploy();
+  const mockowner = await MockOwnerContract.deploy(marketplace, blocknft);
   // deploy the BlockMarketPlace contract
-  return { marketplace, blocknft, BlockToken, owner_, addr1, addr2 }; // return the deployed instance of our BlockMarketPlace contract
+  return {
+    marketplace,
+    blocknft,
+    BlockToken,
+    owner_,
+    addr1,
+    addr2,
+    oneEther,
+    ZeroAddress,
+    mockowner,
+  }; // return the deployed instance of our BlockMarketPlace contract
 };
 
 describe("BlockMarketPlace Test Suite", () => {
@@ -129,6 +143,221 @@ describe("BlockMarketPlace Test Suite", () => {
       console.log(paymentToken);
 
       expect(await paymentToken).to.eq(ZeroAddress);
+    });
+  });
+
+  describe("Buying", () => {
+    it("Should buy nft successfully", async () => {
+      const {
+        marketplace,
+        blocknft,
+        BlockToken,
+        owner_,
+        addr1,
+        addr2,
+        oneEther,
+      } = await loadFixture(deployBlockMarketPlace);
+      let tokenId = 1;
+      await blocknft.connect(addr1).mint(addr1);
+      let token = await ethers.getContractAt("IERC20", BlockToken);
+      await blocknft
+        .connect(addr1)
+        .setApprovalForAll(marketplace.getAddress(), true);
+      await marketplace.connect(addr1).listNft({
+        owner: addr1,
+        tokenId: tokenId,
+        paymentToken: token,
+        NftToken: blocknft.getAddress(),
+        isNative: false,
+        price: 100000,
+        sold: false,
+        minOffer: 10,
+      });
+      // mint tokens to buy nft
+      await BlockToken.connect(owner_).mint(oneEther, addr2);
+      await BlockToken.connect(addr2).approve(
+        marketplace.getAddress(),
+        oneEther
+      );
+      // buy the nft
+      await marketplace.connect(addr2).buyNft(0);
+    });
+    it("Should revert if already sold", async () => {
+      const {
+        marketplace,
+        blocknft,
+        BlockToken,
+        owner_,
+        addr1,
+        addr2,
+        oneEther,
+      } = await loadFixture(deployBlockMarketPlace);
+      let tokenId = 1;
+      await blocknft.connect(addr1).mint(addr1);
+      let token = await ethers.getContractAt("IERC20", BlockToken);
+      await blocknft
+        .connect(addr1)
+        .setApprovalForAll(marketplace.getAddress(), true);
+      await marketplace.connect(addr1).listNft({
+        owner: addr1,
+        tokenId: tokenId,
+        paymentToken: token,
+        NftToken: blocknft.getAddress(),
+        isNative: false,
+        price: 100000,
+        sold: false,
+        minOffer: 10,
+      });
+      // mint tokens to buy nft
+      await BlockToken.connect(owner_).mint(oneEther, addr2);
+      await BlockToken.connect(addr2).approve(
+        marketplace.getAddress(),
+        oneEther
+      );
+      // buy the nft
+      await marketplace.connect(addr2).buyNft(0);
+
+      await expect(marketplace.connect(addr2).buyNft(0)).to.be.revertedWith(
+        "ALready Sold"
+      );
+    });
+
+    it("Should buy successfully with native value", async () => {
+      const {
+        marketplace,
+        blocknft,
+        BlockToken,
+        owner_,
+        addr1,
+        addr2,
+        oneEther,
+        ZeroAddress,
+      } = await loadFixture(deployBlockMarketPlace);
+      let tokenId = 1;
+      await blocknft.connect(addr1).mint(addr1);
+      let token = await ethers.getContractAt("IERC20", BlockToken);
+      await blocknft
+        .connect(addr1)
+        .setApprovalForAll(marketplace.getAddress(), true);
+      await marketplace.connect(addr1).listNft({
+        owner: addr1,
+        tokenId: tokenId,
+        paymentToken: ZeroAddress,
+        NftToken: blocknft.getAddress(),
+        isNative: true,
+        price: 100000,
+        sold: false,
+        minOffer: 10,
+      });
+      // buy the nft
+      await marketplace.connect(addr2).buyNft(0, { value: 100000 });
+    });
+    it("Should revert if native price is incorrect", async () => {
+      const {
+        marketplace,
+        blocknft,
+        BlockToken,
+        owner_,
+        addr1,
+        addr2,
+        oneEther,
+        ZeroAddress,
+      } = await loadFixture(deployBlockMarketPlace);
+      let tokenId = 1;
+      await blocknft.connect(addr1).mint(addr1);
+      let token = await ethers.getContractAt("IERC20", BlockToken);
+      await blocknft
+        .connect(addr1)
+        .setApprovalForAll(marketplace.getAddress(), true);
+      await marketplace.connect(addr1).listNft({
+        owner: addr1,
+        tokenId: tokenId,
+        paymentToken: ZeroAddress,
+        NftToken: blocknft.getAddress(),
+        isNative: true,
+        price: 100000,
+        sold: false,
+        minOffer: 10,
+      });
+      // buy the nft
+      await expect(
+        marketplace.connect(addr2).buyNft(0, { value: 10000 })
+      ).to.be.revertedWith("Incorrect price");
+    });
+
+    it("Should revert if transfers failed", async () => {
+      const {
+        marketplace,
+        blocknft,
+        BlockToken,
+        owner_,
+        addr1,
+        addr2,
+        oneEther,
+        ZeroAddress,
+        mockowner,
+      } = await loadFixture(deployBlockMarketPlace);
+      let tokenId = 1;
+
+      await mockowner.callList({
+        owner: mockowner.getAddress(),
+        tokenId: tokenId,
+        paymentToken: ZeroAddress,
+        NftToken: blocknft.getAddress(),
+        isNative: true,
+        price: 100000,
+        sold: false,
+        minOffer: 10,
+      });
+      // buy the nft
+      await expect(
+        marketplace.connect(addr2).buyNft(0, { value: 100000 })
+      ).to.be.revertedWith("Owner transfer failed");
+
+      // change market owner
+      await marketplace.connect(owner_).changeOwner(mockowner.getAddress());
+
+      let tokenId2 = 2;
+      await blocknft.connect(addr1).mint(addr1);
+      await blocknft
+        .connect(addr1)
+        .setApprovalForAll(marketplace.getAddress(), true);
+      await marketplace.connect(addr1).listNft({
+        owner: mockowner.getAddress(),
+        tokenId: tokenId2,
+        paymentToken: ZeroAddress,
+        NftToken: blocknft.getAddress(),
+        isNative: true,
+        price: 100000,
+        sold: false,
+        minOffer: 10,
+      });
+
+      await expect(
+        marketplace.connect(addr2).buyNft(1, { value: 100000 })
+      ).to.be.revertedWith("MarketOwner Transfer failed");
+    });
+
+    it("should trigger the fallback", async () => {
+      const {
+        marketplace,
+        blocknft,
+        BlockToken,
+        owner_,
+        addr1,
+        addr2,
+        oneEther,
+        ZeroAddress,
+        mockowner,
+      } = await loadFixture(deployBlockMarketPlace);
+
+      await expect(
+        marketplace.callAnything(mockowner.getAddress())
+      ).to.be.revertedWith("Call failed");
+
+      await marketplace.callname(mockowner.getAddress());
+
+      expect(await mockowner.Name()).to.eq("gregory");
     });
   });
 });
