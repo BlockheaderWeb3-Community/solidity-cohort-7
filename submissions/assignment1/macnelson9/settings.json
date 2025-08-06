@@ -1,0 +1,9 @@
+{
+  "editor.formatOnSave": true,
+  "[solidity]": {
+    "editor.defaultFormatter": "JuanBlanco.solidity"
+  },
+  "solidity.formatter": "forge",
+  "single_line_statement_blocks": "multi",
+  "contract_new_lines": true
+}
