@@ -1,0 +1,4 @@
+== Return ==
+0: contract AccessToken 0xBe7AbfF52fa56d8649DA14420B2f654102706447
+1: contract MembershipNFT 0xA77bFE3E9CaF800f50eAa127F0049861fc316b0E
+2: contract MembershipManager 0xD136CbD359aDB48Fd0eF4721EE7D028ddd916144
